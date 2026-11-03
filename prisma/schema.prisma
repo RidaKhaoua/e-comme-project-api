@@ -1,0 +1,204 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+ 
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+/**
+ * 1. User can have many orders
+ * 2. Order belongs to one user
+ * 3. User Can have many products
+ * 4. Product belongs to many users
+ * 5. Category can have one to many products
+ * 6. Product belongs to one category
+ * 7. Product can have many orders
+ * 8. Order can have many products
+ * 9. User can have many carts
+ * 10. Cart belongs to one user
+ */
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  password     String
+  firstName    String?
+  lastName     String?
+  role         Role     @default(USER)
+  refreshToken String?
+  isArchived   Boolean? @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  orders   Order[] // user has one to many orders
+  carts    Cart[] // user has one to many carts
+  payments Payment[] // user has one to many payments
+
+  @@index([email])
+  @@map("users") // table name
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  price       Decimal  @db.Decimal(10, 2)
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id]) // product has one category
+  stock       Int      @default(0)
+  imageUrl    String?
+  sku         String?  @unique
+  isArchived  Boolean? @default(false)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  OrderItems OrderItems[] // product has one to many order items
+  CartItems  CartItem[] // product has one to many cart items
+
+  @@index([sku])
+  @@index([categoryId])
+  @@index([isActive])
+  @@map("products") // table name
+}
+
+model Category {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  slug        String   @unique
+  imageUrl    String?
+  isArchived  Boolean? @default(false)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  products Product[] // category has one to many products
+
+  @@index([name])
+  @@index([slug])
+  @@index([isActive])
+  @@map("categories") // table name
+}
+
+model Order {
+  id              String       @id @default(uuid())
+  userId          String
+  user            User         @relation(fields: [userId], references: [id]) // order has one user
+  cartId          String?
+  cart            Cart?        @relation(fields: [cartId], references: [id]) // order has one cart
+  orderNumber     String       @unique() @default(cuid())
+  status          OrderStatus  @default(PENDING)
+  totalAmount     Decimal      @db.Decimal(10, 2)
+  shippingAddress String?
+  isArchived      Boolean?     @default(false)
+  orderItems      OrderItems[] // order has one to many order items
+  paymentId       String?
+  payment         Payment? // order has one payment
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@index([userId])
+  @@index([orderNumber])
+  @@index([status])
+  @@map("orders") // table name
+}
+
+model OrderItems {
+  id        String  @id @default(uuid())
+  quantity  Int
+  price     Decimal @db.Decimal(10, 2)
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id]) // order item has one order
+  productId String
+  product   Product @relation(fields: [productId], references: [id]) // order item has one product
+  isArchived Boolean? @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([orderId])
+  @@index([productId])
+  @@map("order_items") // table name
+} 
+
+model Cart {
+  id         String     @id @default(uuid())
+  userId     String
+  user       User       @relation(fields: [userId], references: [id]) // cart has one user
+  checkedOut   Boolean    @default(false)
+  isArchived Boolean?   @default(false)
+  cartItems  CartItem[] // cart has one to many cart items
+  order      Order[] // cart has one to many orders
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@index([userId])
+  @@map("carts") // table name
+}
+
+model CartItem {
+  id        String  @id @default(uuid())
+  cartId    String
+  cart      Cart    @relation(fields: [cartId], references: [id]) // cart item has one cart
+  productId String
+  product   Product @relation(fields: [productId], references: [id]) // cart item has one product
+  quantity  Int @default(1)
+  price     Decimal @db.Decimal(10, 2)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([cartId, productId])
+  @@index([cartId])
+  @@index([productId])
+  @@map("cart_items") // table name
+}
+
+model Payment {
+  id         String   @id @default(uuid())
+  amount     Decimal  @db.Decimal(10, 2)
+  paymentMethod String?
+  paymentStatus PaymentStatus
+  currency   String   @default("usd")
+  transactionId String? @unique
+  userId     String
+  user       User     @relation(fields: [userId], references: [id]) // payment has one user
+  orderId    String   @unique
+  order      Order    @relation(fields: [orderId], references: [id]) // payment has one order
+  isArchived Boolean? @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([userId])
+  @@index([orderId])
+  @@index([transactionId])
+  @@map("payments") // table name
+}
+
+
