@@ -5,7 +5,6 @@
 
 generator client {
   provider = "prisma-client-js"
- 
 }
 
 datasource db {
@@ -46,16 +45,17 @@ enum PaymentStatus {
  */
 
 model User {
-  id           String   @id @default(uuid())
-  email        String   @unique
+  id           String    @id @default(uuid())
+  email        String    @unique
   password     String
   firstName    String?
   lastName     String?
-  role         Role     @default(USER)
+  role         Role      @default(USER)
   refreshToken String?
-  isArchived   Boolean? @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  isArchived   Boolean?  @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
 
   orders   Order[] // user has one to many orders
   carts    Cart[] // user has one to many carts
@@ -66,19 +66,19 @@ model User {
 }
 
 model Product {
-  id          String   @id @default(uuid())
+  id          String     @id @default(uuid())
   name        String
   description String?
-  price       Decimal  @db.Decimal(10, 2)
+  price       Decimal    @db.Decimal(10, 2)
   categoryId  String
-  category    Category @relation(fields: [categoryId], references: [id]) // product has one category
-  stock       Int      @default(0)
+  category    Categories @relation(fields: [categoryId], references: [id]) // product has one category
+  stock       Int        @default(0)
   imageUrl    String?
-  sku         String?  @unique
-  isArchived  Boolean? @default(false)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  sku         String?    @unique
+  isArchived  Boolean?   @default(false)
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 
   OrderItems OrderItems[] // product has one to many order items
   CartItems  CartItem[] // product has one to many cart items
@@ -89,7 +89,7 @@ model Product {
   @@map("products") // table name
 }
 
-model Category {
+model Categories {
   id          String   @id @default(uuid())
   name        String
   description String?
@@ -132,27 +132,27 @@ model Order {
 }
 
 model OrderItems {
-  id        String  @id @default(uuid())
-  quantity  Int
-  price     Decimal @db.Decimal(10, 2)
-  orderId   String
-  order     Order   @relation(fields: [orderId], references: [id]) // order item has one order
-  productId String
-  product   Product @relation(fields: [productId], references: [id]) // order item has one product
+  id         String   @id @default(uuid())
+  quantity   Int
+  price      Decimal  @db.Decimal(10, 2)
+  orderId    String
+  order      Order    @relation(fields: [orderId], references: [id]) // order item has one order
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id]) // order item has one product
   isArchived Boolean? @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@index([orderId])
   @@index([productId])
   @@map("order_items") // table name
-} 
+}
 
 model Cart {
   id         String     @id @default(uuid())
   userId     String
   user       User       @relation(fields: [userId], references: [id]) // cart has one user
-  checkedOut   Boolean    @default(false)
+  checkedOut Boolean    @default(false)
   isArchived Boolean?   @default(false)
   cartItems  CartItem[] // cart has one to many cart items
   order      Order[] // cart has one to many orders
@@ -164,13 +164,13 @@ model Cart {
 }
 
 model CartItem {
-  id        String  @id @default(uuid())
+  id        String   @id @default(uuid())
   cartId    String
-  cart      Cart    @relation(fields: [cartId], references: [id]) // cart item has one cart
+  cart      Cart     @relation(fields: [cartId], references: [id]) // cart item has one cart
   productId String
-  product   Product @relation(fields: [productId], references: [id]) // cart item has one product
-  quantity  Int @default(1)
-  price     Decimal @db.Decimal(10, 2)
+  product   Product  @relation(fields: [productId], references: [id]) // cart item has one product
+  quantity  Int      @default(1)
+  price     Decimal  @db.Decimal(10, 2)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -181,24 +181,22 @@ model CartItem {
 }
 
 model Payment {
-  id         String   @id @default(uuid())
-  amount     Decimal  @db.Decimal(10, 2)
+  id            String        @id @default(uuid())
+  amount        Decimal       @db.Decimal(10, 2)
   paymentMethod String?
   paymentStatus PaymentStatus
-  currency   String   @default("usd")
-  transactionId String? @unique
-  userId     String
-  user       User     @relation(fields: [userId], references: [id]) // payment has one user
-  orderId    String   @unique
-  order      Order    @relation(fields: [orderId], references: [id]) // payment has one order
-  isArchived Boolean? @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  currency      String        @default("usd")
+  transactionId String?       @unique
+  userId        String
+  user          User          @relation(fields: [userId], references: [id]) // payment has one user
+  orderId       String        @unique
+  order         Order         @relation(fields: [orderId], references: [id]) // payment has one order
+  isArchived    Boolean?      @default(false)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 
   @@index([userId])
   @@index([orderId])
   @@index([transactionId])
   @@map("payments") // table name
 }
-
-
