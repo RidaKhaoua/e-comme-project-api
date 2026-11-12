@@ -66,19 +66,19 @@ model User {
 }
 
 model Product {
-  id          String   @id @default(uuid())
+  id          String     @id @default(uuid())
   name        String
   description String?
-  price       Decimal  @db.Decimal(10, 2)
+  price       Decimal    @db.Decimal(10, 2)
   categoryId  String
-  category    Category @relation(fields: [categoryId], references: [id]) // product has one category
-  stock       Int      @default(0)
+  category    Categories @relation(fields: [categoryId], references: [id]) // product has one category
+  stock       Int        @default(0)
   imageUrl    String?
-  sku         String?  @unique
-  isArchived  Boolean? @default(false)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  sku         String?    @unique
+  isArchived  Boolean?   @default(false)
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 
   OrderItems OrderItems[] // product has one to many order items
   CartItems  CartItem[] // product has one to many cart items
@@ -89,7 +89,7 @@ model Product {
   @@map("products") // table name
 }
 
-model Category {
+model Categories {
   id          String   @id @default(uuid())
   name        String
   description String?

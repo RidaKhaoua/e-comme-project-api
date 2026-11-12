@@ -5,8 +5,7 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class PrismaService
   extends PrismaClient
-  implements OnModuleInit, OnModuleDestroy
-{
+  implements OnModuleInit, OnModuleDestroy {
   constructor(private configService: ConfigService) {
     const directUrl = configService.getOrThrow<string>('DATABASE_URL');
 
@@ -58,7 +57,7 @@ export class PrismaService
     await this.order.deleteMany();
     await this.cart.deleteMany();
     await this.product.deleteMany();
-    await this.category.deleteMany();
+    await this.categories.deleteMany();
     await this.user.deleteMany();
   }
 }
