@@ -3,6 +3,7 @@ import { CategoriesService } from './categories.service.js';
 import { CategoriesController } from './categories.controller.js';
 import { CategoryRepository } from './categories.repository.js';
 
+
 @Module({
   controllers: [CategoriesController],
   providers: [CategoriesService, CategoryRepository],

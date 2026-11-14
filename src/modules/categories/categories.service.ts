@@ -23,7 +23,7 @@ export class CategoriesService {
             this.categoryRepository.count(queryDto)
         ]);
 
-        const totalPages = Math.ceil(total / limit) || 1;
+        const totalPages = total > 0 ?  Math.ceil(total / limit) : 0;
         return {
             data: categories,
             meta: { total, totalPages, page, limit }

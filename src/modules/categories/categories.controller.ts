@@ -15,7 +15,7 @@ import { UpdateCategoryDto } from './dto/update-category.dto.js';
 @Controller('categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) { }
-
+  
   @ApiBearerAuth("JWT-auth")
   @ApiBody({ type: CreateCategorieDto })
   @ApiOperation({ summary: "Create Category" })
@@ -58,7 +58,7 @@ export class CategoriesController {
     }
   })
   @Get()
-  async findAll(@Query() query: QueryCategoryDto) {
+  async findAll(@Query() query: QueryCategoryDto):Promise<{ data: CategoryResponseDto[], meta: { total: number; page: number; limit: number; totalPages: number } }> {
     return await this.categoriesService.findAll(query);
   }
 
