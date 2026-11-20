@@ -10,7 +10,7 @@ import { ProductsModule } from './modules/products/products.module.js';
 import { OrdersModule } from './modules/orders/orders.module.js';
 import appConfig from './config/app.config.js';
 import jwtConfig from './config/jwt.config.js';
-
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -18,16 +18,22 @@ import jwtConfig from './config/jwt.config.js';
       load: [appConfig, jwtConfig],
       isGlobal: true,
       envFilePath: '.env',
-      expandVariables: true
+      expandVariables: true,
     }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60, // seconds
+        limit: 10, // 10 request per 60 seconds
+      },
+    ]),
     PrismaModule,
     AuthModule,
     UsersModule,
     CategoriesModule,
     ProductsModule,
-    OrdersModule
+    OrdersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}
