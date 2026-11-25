@@ -11,6 +11,7 @@ import { OrdersModule } from './modules/orders/orders.module.js';
 import appConfig from './config/app.config.js';
 import jwtConfig from './config/jwt.config.js';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { PaymentsModule } from './modules/payments/payments.module.js';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
     CategoriesModule,
     ProductsModule,
     OrdersModule,
+    PaymentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

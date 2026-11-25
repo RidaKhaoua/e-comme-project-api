@@ -195,7 +195,7 @@ export class OrdersController {
   @ApiOkResponse({ description: 'Get Order Details.', type: OrderResponseDto })
   @ApiNotFoundResponse({ description: 'Order not found' })
   @ApiForbiddenResponse({ description: 'Admin acess required' })
-  @ApiUnauthorizedResponse({ description: 'Authantification required' })
+  @ApiUnauthorizedResponse({ description: 'Authentification required' })
   @RelaxedrateThrottle()
   @Roles(Role.ADMIN)
   async findOneByAdmin(@Param('id') id: string) {
@@ -214,7 +214,7 @@ export class OrdersController {
     type: OrderApiResponseDto<OrderResponseDto>,
   })
   @ApiNotFoundResponse({ description: 'Order not found' })
-  @ApiUnauthorizedResponse({ description: 'Authantification required' })
+  @ApiUnauthorizedResponse({ description: 'Authentification required' })
   @RelaxedrateThrottle()
   @Roles(Role.USER)
   async findOne(@Param('id') id: string, @GetUser('id') userId: string) {
@@ -229,7 +229,7 @@ export class OrdersController {
   })
   @ApiOkResponse({ type: OrderApiResponseDto<OrderResponseDto> })
   @ApiForbiddenResponse({ description: 'Admin acess required' })
-  @ApiUnauthorizedResponse({ description: 'Authantification required.' })
+  @ApiUnauthorizedResponse({ description: 'Authentification required.' })
   @ApiNotFoundResponse({ description: 'Order not found' })
   @ModerateThrottle()
   async updateForAdmin(
@@ -247,7 +247,7 @@ export class OrdersController {
   //   type: UpdateOrderDto,
   // })
   // @ApiOkResponse({ type: OrderApiResponseDto<OrderResponseDto> })
-  // @ApiUnauthorizedResponse({ description: 'Authantification required.' })
+  // @ApiUnauthorizedResponse({ description: 'Authentification required.' })
   // @ApiNotFoundResponse({ description: 'Order not found' })
   // @ModerateThrottle()
   // async update(
@@ -267,7 +267,7 @@ export class OrdersController {
     type: OrderApiResponseDto<OrderResponseDto>,
   })
   @ApiForbiddenResponse({ description: 'Admin access required' })
-  @ApiUnauthorizedResponse({ description: 'Authantification required.' })
+  @ApiUnauthorizedResponse({ description: 'Authentification required.' })
   @ApiNotFoundResponse({ description: 'Order not found' })
   @ModerateThrottle()
   cancelOrderByAdmin(@Param('id') id: string) {
@@ -282,7 +282,7 @@ export class OrdersController {
     description: 'Order Deleted with successfully',
     type: OrderApiResponseDto<OrderResponseDto>,
   })
-  @ApiUnauthorizedResponse({ description: 'Authantification required.' })
+  @ApiUnauthorizedResponse({ description: 'Authentification required.' })
   @ApiNotFoundResponse({ description: 'Order not found' })
   @ModerateThrottle()
   cancel(@Param('id') id: string, @GetUser('id') userId: string) {
